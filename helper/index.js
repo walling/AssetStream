@@ -1,0 +1,2 @@
+
+exports.streamToString = require('./streamToString');

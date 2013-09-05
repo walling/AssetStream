@@ -1,0 +1,2 @@
+
+exports.javaScriptMinify = require('./javaScriptMinify');
