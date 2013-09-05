@@ -7,18 +7,23 @@ var transformCache = require('../helper/transformCache');
 var isType = require('../helper/isType');
 
 function minifyJavaScriptAsset(cache, asset, callback) {
-	cache.get(asset, function(error, cachedAsset) {
-		if (error || !cachedAsset) {
-			workers(asset, function(error, transformedAsset) {
-				if (error) return callback(error);
+	if ('minified' in asset.content) {
+		return callback(null, asset);
+	}
 
-				cache.put(asset, transformedAsset, function(error) {
-					callback(null, transformedAsset);
-				});
-			});
-		} else {
-			callback(null, cachedAsset);
+	cache.get(asset, function(error, cachedAsset) {
+		if (!error && cachedAsset && 'minified' in cachedAsset.content) {
+			return callback(null, cachedAsset);
 		}
+
+		workers(asset, function(error, transformedAsset) {
+			if (error) return callback(error);
+
+			cache.put(asset, transformedAsset, function(error) {
+				callback(null, transformedAsset);
+			});
+		});
+
 	});
 }
 
