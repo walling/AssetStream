@@ -21,11 +21,14 @@ AssetTransform.prototype._transform = function(asset, encoding, next) {
 
 	if (self.transform) {
 		self.transform(asset || null, function(error, transformedAsset) {
-			if (transformedAsset) {
-				self.push(transformedAsset); // TODO: Convert to readable stream
+			if (error) {
+				self.emit('error', error);
 			}
-			next(error);
+			if (transformedAsset) {
+				self.push(transformedAsset);
+			}
 		});
+		next();
 	} else {
 		self.once('_transform', function() {
 			self._transform(asset, encoding, next);
