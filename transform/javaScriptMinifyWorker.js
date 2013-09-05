@@ -48,7 +48,7 @@ module.exports = function(asset, callback) {
 			warnings.push(properties);
 		};
 
-		var initialAST = UglifyJS.parse(asset.content, {
+		var initialAST = UglifyJS.parse(asset.content.data, {
 			filename: asset.path
 		});
 
@@ -82,9 +82,12 @@ module.exports = function(asset, callback) {
 		});
 		compressedAST.print(code);
 
-		asset.dependencies = Object.keys(dependencies).sort();
-		asset.content = code.toString();
-		asset.sourceMap = sourceMap.toString();
+		asset.content = {
+			type: 'application/javascript',
+			data: code.toString(),
+			sourceMap: sourceMap.toString(),
+			dependencies: Object.keys(dependencies).sort()
+		};
 
 		var endTime = new Date();
 		asset.transforms = (asset.transforms || []).concat([{
