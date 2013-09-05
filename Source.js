@@ -57,7 +57,7 @@ AssetSource.prototype._read = function(size) {
 		}
 	} else {
 		self.once('_asset', function() {
-			self._read(size); // TODO: Use process.nextTick here?
+			self._read(size);
 		});
 	}
 };

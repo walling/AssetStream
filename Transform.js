@@ -22,6 +22,7 @@ AssetTransform.prototype._transform = function(asset, encoding, next) {
 	if (self.transform) {
 		self.transform(asset || null, function(error, transformedAsset) {
 			if (error) {
+				console.error('Transform:', error.stack || error);
 				self.emit('error', error);
 			}
 			if (transformedAsset) {
