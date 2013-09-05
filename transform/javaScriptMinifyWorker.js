@@ -82,12 +82,16 @@ module.exports = function(asset, callback) {
 		});
 		compressedAST.print(code);
 
-		asset.content = {
-			type: 'application/javascript',
-			data: code.toString(),
-			sourceMap: sourceMap.toString(),
-			dependencies: Object.keys(dependencies).sort()
-		};
+		// asset.content = {
+		// 	type: 'application/javascript',
+		// 	data: code.toString(),
+		// 	sourceMap: sourceMap.toString(),
+		// 	dependencies: Object.keys(dependencies).sort()
+		// };
+
+		asset.content.minified = code.toString();
+		asset.content.sourceMap = sourceMap.toString();
+		asset.content.dependencies = Object.keys(dependencies).sort();
 
 		var endTime = new Date();
 		asset.transforms = (asset.transforms || []).concat([{
