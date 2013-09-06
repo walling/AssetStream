@@ -1,3 +1,3 @@
 
+exports.minifyJavaScript = require('./minifyJavaScript');
 exports.compressText = require('./compressText');
-exports.javaScriptMinify = require('./javaScriptMinify');
