@@ -42,3 +42,5 @@ AssetStream.source.directory({
 ```
 
 Look around the codebase, if you're curious.
+
+**Install:** `npm install assetstream`
