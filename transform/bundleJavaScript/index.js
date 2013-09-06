@@ -218,7 +218,7 @@ module.exports = Transform.create(function(options) {
 		}).join(',') + '}';
 
 		var bundle = loader.asset.content.minified.replace(/\[\],\{\},0/, function() {
-			return '[\n' + loaderModules + '],' + loaderMappings + ',0';
+			return '[\n' + loaderModules + '\n],' + loaderMappings + ',0';
 		}) + '\n//@ sourceMappingURL=' + path.relative(path.dirname(outputPath), outputMapPath);
 
 		var endTime = new Date();
