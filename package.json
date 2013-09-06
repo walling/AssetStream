@@ -8,7 +8,6 @@
 	},
 	"dependencies": {
 		"miniwatch": "0.1.x",
-		"level": "0.15.x",
 		"mime": "*",
 		"worker-farm": "0.2.x",
 		"uglify-js": "2.x",
