@@ -13,6 +13,7 @@
 		module.call(global, function(name) {
 			return loadModule((mappings[name] || {})[index]);
 		}, exports, module, global);
+		return exports;
 	}
 
 	loadModule(entry);
