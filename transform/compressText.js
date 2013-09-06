@@ -86,3 +86,5 @@ module.exports = Transform.create(function(options) {
 		}
 	};
 });
+
+module.exports.compressTextAsset = compressTextAsset;
