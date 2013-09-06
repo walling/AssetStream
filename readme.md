@@ -1,4 +1,4 @@
-Stream and transform your browser assets
+## Stream and transform your browser assets
 
 The goal is to make you able to build your own high performance asset pipeline from small atomic parts, ie. JavaScript bundling. The codebase is still very experimental, so expect big changes ahead.
 
