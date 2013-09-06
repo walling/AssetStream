@@ -48,9 +48,23 @@ module.exports = function(asset, callback) {
 			warnings.push(properties);
 		};
 
-		var initialAST = UglifyJS.parse(asset.content.data, {
-			filename: asset.path
-		});
+		var initialAST;
+		try {
+			initialAST = UglifyJS.parse(asset.content.data, {
+				filename: asset.path
+			});
+		} catch (error) {
+
+			// Quickfix for UglifyJS2 issue #288: https://github.com/mishoo/UglifyJS2/issues/288
+			// This makes the generated source-map invalid on line 1.
+			if (error && error.message === "'return' outside of function") {
+				var data = '(function(){' + asset.content.data + '\n}.call(this));';
+				initialAST = UglifyJS.parse(data, {
+					filename: asset.path
+				});
+			}
+
+		}
 
 		var dependencies = {};
 		var findRequires = new UglifyJS.TreeWalker(function(node) {
