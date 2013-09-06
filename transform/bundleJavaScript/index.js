@@ -101,19 +101,6 @@ module.exports = Transform.create(function(options) {
 			requirePath = path.resolve(path.dirname(currentPath), requirePath);
 		}
 
-		// HACK! Temporarily support HBS files.
-		if (/\.hbs$/.test(requirePath)) return loadJavaScriptAsset({
-			event: 'update',
-			path: requirePath,
-			content: {
-				type: 'application/javascript',
-				data: 'module.exports=function(){};',
-				minified: 'function(a,b,c){c.exports=function(){};}',
-				sourceMap: {version:3,sources:[requirePath],names:['module','exports'],mappings:'AAAAA,OAAOC,QAAQ'},
-				dependencies: []
-			}
-		});
-
 		if (/^\//.test(requirePath)) {
 			return modules[requirePath + '.js'] || modules[requirePath];
 		} else {
@@ -236,6 +223,8 @@ module.exports = Transform.create(function(options) {
 
 		var endTime = new Date();
 		var bundleTime = endTime - startTime;
+
+		bundleHasBeenBuilt = true;
 
 		bundleCallback(null, {
 			event: 'update',

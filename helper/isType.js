@@ -12,3 +12,10 @@ isType.matching = function(asset, regexp) {
 isType.javaScript = function(asset) {
 	return isType.matching(asset, (/\bjavascript\b/i));
 };
+
+isType.handlebars = function(asset) {
+	return (
+		isType.matching(asset, (/\bhandlebars\b/i)) ||
+		(/\.(?:hbs|handlebars)$/.test(asset.path))
+	);
+};
