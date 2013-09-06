@@ -83,7 +83,7 @@ module.exports = function(asset, callback) {
 		compressedAST.print(code);
 
 		asset.content.minified = code.toString();
-		asset.content.sourceMap = sourceMap.toString();
+		asset.content.sourceMap = JSON.parse(sourceMap.toString());
 		asset.content.dependencies = Object.keys(dependencies).sort();
 
 		var endTime = new Date();
