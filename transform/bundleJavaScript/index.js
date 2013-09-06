@@ -188,7 +188,7 @@ module.exports = Transform.create(function(options) {
 		});
 
 		var bundleSourceMap = new SourceMapGenerator({
-			file: outputMapPath
+			file: outputPath
 		});
 		bundleSourceMap.lineOffset = 0;
 		addModuleSourceMap(bundleSourceMap, loader);
