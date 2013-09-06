@@ -232,7 +232,7 @@ module.exports = Transform.create(function(options) {
 
 		var bundle = loader.asset.content.minified.replace(/\[\],\{\},0/, function() {
 			return '[\n' + loaderModules + '],' + loaderMappings + ',0';
-		}) + '\n//@ sourceMappingURL=' + outputMapPath;
+		}) + '\n//@ sourceMappingURL=' + path.relative(path.dirname(outputPath), outputMapPath);
 
 		var endTime = new Date();
 		var bundleTime = endTime - startTime;
@@ -273,28 +273,26 @@ module.exports = Transform.create(function(options) {
 	}
 
 	return function(asset, callback) {
-		if (!(asset.event === 'update' && isType.javaScript(asset))) {
+		callback(null, asset);
 
-			if (asset.event === 'delete') {
-				delete modules[asset.path];
+		if (asset.event === 'delete') {
+			delete modules[asset.path];
+		} else if (asset.event === 'update' && isType.javaScript(asset)) {
+
+			if (!asset.content.minified) {
+				callback(new Error('Can only bundle minified JavaScript modules.'));
+				return;
 			}
 
-			callback(null, asset);
-			return;
-		}
+			if (!loader) {
+				loader = loadJavaScriptAsset(createLoader(loaderPath));
+				callback(null, loader.asset);
+			}
 
-		if (!asset.content.minified) {
-			callback(new Error('Can only bundle minified JavaScript modules.'));
-			return;
-		}
+			modules[asset.path] = loadJavaScriptAsset(asset);
+			bundleCallback = callback;
+			createBundle();
 
-		if (!loader) {
-			loader = loadJavaScriptAsset(createLoader(loaderPath));
-			callback(null, loader.asset);
 		}
-
-		modules[asset.path] = loadJavaScriptAsset(asset);
-		bundleCallback = callback;
-		createBundle();
 	};
 });
