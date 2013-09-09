@@ -40,9 +40,18 @@ var wrapCommonJS = new UglifyJS.TreeTransformer(null, function(node) {
 module.exports = function(asset, callback) {
 	try {
 		var startTime = new Date();
+		var firstToken = null;
 
 		var warnings = [];
 		UglifyJS.AST_Node.warn = function(text, properties) {
+			// Ignore warnings regarding dropping one of the module parameters.
+			if (text === 'Dropping unused function argument {name} [{file}:{line},{col}]' &&
+					(/^(require|exports|module|global)$/).test(properties.name) &&
+					properties.line === firstToken.line &&
+					properties.col === firstToken.col) {
+				return;
+			}
+
 			properties.message = UglifyJS.string_template(text, properties);
 			delete properties.file;
 			warnings.push(properties);
@@ -65,6 +74,8 @@ module.exports = function(asset, callback) {
 			}
 
 		}
+
+		firstToken = initialAST.start;
 
 		var dependencies = {};
 		var findRequires = new UglifyJS.TreeWalker(function(node) {
