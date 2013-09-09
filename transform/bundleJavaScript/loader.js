@@ -2,18 +2,20 @@
 (function(global, modules, mappings, entry) {
 
 	function loadModule(index) {
-		var module = modules[index];
-		if (!module) {
+		var fn = modules[index];
+		if (!fn) {
 			return;
 		}
-		if ('exports' in module) {
-			return module.exports;
+		if (fn.module) {
+			return fn.module.exports;
 		}
-		var exports = module.exports = {};
-		module.call(global, function(name) {
+		var module = fn.module = {
+			exports: {}
+		};
+		fn.call(global, function(name) {
 			return loadModule((mappings[name] || {})[index]);
-		}, exports, module, global);
-		return exports;
+		}, module.exports, module, global);
+		return module.exports;
 	}
 
 	loadModule(entry);

@@ -159,15 +159,12 @@ module.exports = Transform.create(function(options) {
 
 		var usedModules = {};
 		var missingModules = [entryModule];
-		var index = 0;
 
 		while (missingModules.length > 0) {
 			var module = missingModules.shift();
 			usedModules[module.asset.path] = module;
 
-			module.index = index++;
 			module.dependencies = {};
-
 			var requirePaths = module.asset.content.dependencies;
 			for (var i = 0; i < requirePaths.length; i++) {
 				var requirePath = requirePaths[i];
@@ -184,7 +181,9 @@ module.exports = Transform.create(function(options) {
 		}
 
 		usedModules = Object.keys(usedModules).map(function(modulePath, index) {
-			return usedModules[modulePath];
+			var module = usedModules[modulePath];
+			module.index = index;
+			return module;
 		});
 
 		var bundleSourceMap = new SourceMapGenerator({
