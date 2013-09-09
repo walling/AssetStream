@@ -1,5 +1,11 @@
 
 function contentSize(asset, key) {
+	if (typeof(asset) === 'string') {
+		return Buffer.byteLength(asset);
+	} else if (Buffer.isBuffer(asset)) {
+		return asset.length;
+	}
+
 	key = key || 'data';
 
 	if (!(asset && asset.content && asset.content[key])) {
