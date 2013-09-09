@@ -1,6 +1,8 @@
 
 var AssetStream = exports;
 
+AssetStream.mime = require('mime');
+
 AssetStream.Source = require('./Source');
 AssetStream.Transform = require('./Transform');
 AssetStream.Destination = require('./Destination');
