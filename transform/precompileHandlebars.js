@@ -9,14 +9,14 @@ function precompileHandlebarsAsset(asset, callback) {
 
 	var partialName = path.basename(
 		asset.path.replace(/\.(?:hbs|handlebars)$/, '')
-	).replace(/\W+/g, '_').replace(/^([0-9])/, '_$1');
+	);
 
 	var javaScript = (
 		'// Pre-compiled Handlebars template: ' + asset.path + '\n' +
 		'\n' +
 		'var Handlebars = require(\'handlebars-runtime\');\n' +
 		'\n' +
-		'module.exports = Handlebars.partials.' + partialName + ' = ' +
+		'module.exports = Handlebars.partials[' + JSON.stringify(partialName) + '] = ' +
 		'Handlebars.template(' + Handlebars.precompile(asset.content.data) + ');\n'
 	);
 
