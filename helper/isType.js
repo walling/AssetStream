@@ -19,3 +19,10 @@ isType.handlebars = function(asset) {
 		(/\.(?:hbs|handlebars)$/.test(asset.path))
 	);
 };
+
+isType.less = function(asset) {
+	return (
+		isType.matching(asset, (/^text\/(x-)?less$/i)) ||
+		(/\.less$/.test(asset.path))
+	);
+};

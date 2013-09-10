@@ -1,6 +1,6 @@
 {
 	"name": "assetstream",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "Stream and transform your browser assets.",
 	"repository": {
 		"type": "git",
@@ -13,6 +13,7 @@
 		"worker-farm": "0.2.x",
 		"uglify-js": "2.x",
 		"source-map": "0.1.x",
-		"handlebars": "1.x"
+		"handlebars": "1.x",
+		"common": "0.2.x"
 	}
 }
