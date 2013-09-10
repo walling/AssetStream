@@ -279,7 +279,9 @@ module.exports = Transform.create(function(options) {
 
 			modules[asset.path] = loadJavaScriptAsset(asset);
 			bundleCallback = callback;
-			createBundle();
+
+			clearTimeout(bundleTimer);
+			bundleTimer = setTimeout(createBundle, 100);
 
 		}
 	};
