@@ -263,26 +263,32 @@ module.exports = Transform.create(function(options) {
 	return function(asset, callback) {
 		callback(null, asset);
 
+		var shouldBundle = false;
+
 		if (asset.event === 'delete') {
+			if (modules[asset.path]) {
+				shouldBundle = true;
+			}
 			delete modules[asset.path];
 		} else if (asset.event === 'update' && isType.javaScript(asset)) {
-
 			if (!asset.content.minified) {
 				callback(new Error('Can only bundle minified JavaScript modules.'));
 				return;
 			}
 
+			modules[asset.path] = loadJavaScriptAsset(asset);
+			shouldBundle = true;
+		}
+
+		if (shouldBundle) {
 			if (!loader) {
 				loader = loadJavaScriptAsset(createLoader(loaderPath));
 				callback(null, loader.asset);
 			}
 
-			modules[asset.path] = loadJavaScriptAsset(asset);
 			bundleCallback = callback;
-
 			clearTimeout(bundleTimer);
 			bundleTimer = setTimeout(createBundle, 100);
-
 		}
 	};
 });
