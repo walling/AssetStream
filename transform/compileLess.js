@@ -85,7 +85,7 @@ function updateAsset(asset, callback) {
 	}
 }
 
-function errorCSS(error, ast) {
+function errorMessage(error, ast) {
 	var filename = ast.filename;
 	if (error.line) {
 		filename += ':' + error.line;
@@ -99,11 +99,20 @@ function errorCSS(error, ast) {
 		message = JSON.stringify(error);
 	}
 
+	return {
+		filename: filename,
+		line: error.line,
+		column: error.column,
+		message: filename + ': ' + message
+	};
+}
+
+function errorCSS(message) {
 	var css =
 		'body:before {\n' +
 		'\tposition: fixed;\n' +
 		'\tz-index: 100000;\n' +
-		'\tcontent: ' + JSON.stringify(filename + ': ' + message) + ';\n' +
+		'\tcontent: ' + JSON.stringify(message) + ';\n' +
 		'\ttop: 0;\n' +
 		'\tleft: 0;\n' +
 		'\tright: 0;\n' +
@@ -124,16 +133,22 @@ module.exports = Transform.create(function() {
 		if (isType.less(asset)) {
 			updateAsset(asset, function(error, ast) {
 				var css;
+				var warning;
+
 				if (error) {
-					css = errorCSS(error, ast);
+					warning = errorMessage(error, ast);
 				} else if (ast.toCSS) {
 					try {
 						css = ast.toCSS();
 					} catch (compileError) {
-						css = errorCSS(compileError, ast);
+						warning = errorMessage(compileError, ast);
 					}
 				} else {
 					css = null;
+				}
+
+				if (warning) {
+					css = errorCSS(warning.message);
 				}
 
 				if (cachedCSS[ast.filename] !== css) {
@@ -147,7 +162,11 @@ module.exports = Transform.create(function() {
 							content: {
 								type: 'text/css',
 								data: css
-							}
+							},
+							transforms: [{
+								name: 'compileLess',
+								warnings: warning ? [warning] : undefined
+							}]
 						});
 					} else {
 						delete cachedCSS[ast.filename];
