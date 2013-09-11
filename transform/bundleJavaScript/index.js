@@ -143,7 +143,7 @@ module.exports = Transform.create(function(options) {
 		bundleErrors = [];
 
 		var now = Date.now();
-		var remainingTime = 100 - (now - bundleLastTime);
+		var remainingTime = 5000 - (now - bundleLastTime);
 		if (remainingTime > 0) {
 			bundleTimer = setTimeout(createBundle, remainingTime);
 			return;

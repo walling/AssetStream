@@ -1,6 +1,6 @@
 {
 	"name": "assetstream",
-	"version": "0.1.9",
+	"version": "0.1.10",
 	"description": "Stream and transform your browser assets.",
 	"repository": {
 		"type": "git",

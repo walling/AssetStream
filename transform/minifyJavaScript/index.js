@@ -2,7 +2,7 @@
 var Transform = require('../../Transform');
 var util = require('util');
 var workerFarm = require('worker-farm');
-var workers = workerFarm(require.resolve('./worker'));
+var workers = require(require.resolve('./worker'));
 var transformCache = require('../../helper/transformCache');
 var isType = require('../../helper/isType');
 
