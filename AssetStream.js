@@ -1,6 +1,8 @@
 
 var AssetStream = exports;
 
+AssetStream.version = require('./package.json').version;
+
 AssetStream.mime = require('mime');
 
 AssetStream.Source = require('./Source');
