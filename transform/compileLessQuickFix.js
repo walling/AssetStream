@@ -30,17 +30,22 @@ function errorMessage(error, filename) {
 
 function errorCSS(message) {
 	var css =
-		'body:before {\n' +
+		'html:before {\n' +
 		'\tposition: fixed;\n' +
 		'\tz-index: 100000;\n' +
 		'\tcontent: ' + JSON.stringify(message) + ';\n' +
 		'\ttop: 0;\n' +
 		'\tleft: 0;\n' +
 		'\tright: 0;\n' +
-		'\tpadding: 10px;\n' +
+		'\tpadding: 30px;\n' +
 		'\tbackground-color: #900;\n' +
 		'\tcolor: #fff;\n' +
 		'\tborder-bottom: 2px solid #600;\n' +
+		'\topacity: 1.0;\n' +
+		'}\n' +
+		'\n' +
+		'body {\n' +
+		'\topacity: 0.5;\n' +
 		'}\n';
 	return css;
 }
@@ -48,6 +53,7 @@ function errorCSS(message) {
 module.exports = Transform.create(function(options) {
 	var filename = options.filename;
 	var filenameCSS = filename.replace(/\.less$/, '') + '.css';
+	var lastGoodCSS;
 	var cachedCSS;
 
 	var compileLastTime = Date.now();
@@ -114,7 +120,10 @@ module.exports = Transform.create(function(options) {
 		if (isType.less(asset)) {
 			updateAsset(asset, function(error, css) {
 				if (error) {
-					css = errorCSS(error.message);
+					css = errorCSS(error.message) +
+						(lastGoodCSS ? '\n\n' + lastGoodCSS : '');
+				} else {
+					lastGoodCSS = css;
 				}
 
 				if (cachedCSS !== css) {
