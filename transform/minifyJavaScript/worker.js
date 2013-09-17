@@ -71,6 +71,8 @@ module.exports = function(asset, callback) {
 				initialAST = UglifyJS.parse(data, {
 					filename: asset.path
 				});
+			} else {
+				throw error;
 			}
 
 		}
@@ -122,6 +124,8 @@ module.exports = function(asset, callback) {
 	} catch (error) {
 		if (error instanceof UglifyJS.JS_Parse_Error) {
 			console.error('ERR: Parse error at ' + asset.path + ':' + error.line + ',' + error.col + ': ' + error.message + '\n' + error.stack);
+		} else {
+			console.error('ERR: Parse error at ' + asset.path + ':', error.stack || error);
 		}
 
 		var reportedError = new Error('Could not minify JS.');
