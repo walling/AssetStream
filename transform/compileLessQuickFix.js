@@ -30,7 +30,7 @@ function errorMessage(error, filename) {
 
 function errorCSS(message) {
 	var css =
-		'html:before {\n' +
+		'body:before {\n' +
 		'\tposition: fixed;\n' +
 		'\tz-index: 100000;\n' +
 		'\tcontent: ' + JSON.stringify(message) + ';\n' +
@@ -42,10 +42,6 @@ function errorCSS(message) {
 		'\tcolor: #fff;\n' +
 		'\tborder-bottom: 2px solid #600;\n' +
 		'\topacity: 1.0;\n' +
-		'}\n' +
-		'\n' +
-		'body {\n' +
-		'\topacity: 0.5;\n' +
 		'}\n';
 	return css;
 }
