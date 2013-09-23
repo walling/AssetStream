@@ -5,6 +5,7 @@ var workerFarm = require('worker-farm');
 var workers = require(require.resolve('./worker'));
 var transformCache = require('../../helper/transformCache');
 var isType = require('../../helper/isType');
+var ferro = require('ferro');
 
 function minifyJavaScriptAsset(cache, asset, callback) {
 	if ('minified' in asset.content) {
@@ -33,7 +34,13 @@ module.exports = Transform.create(function(options) {
 
 	return function(asset, callback) {
 		if (asset.event === 'update' && isType.javaScript(asset)) {
-			minifyJavaScriptAsset(cache, asset, callback);
+			minifyJavaScriptAsset(cache, asset, function(error, minifiedAsset) {
+				if (error) {
+					return callback(ferro('MinifyJavaScriptError', error));
+				}
+
+				callback(null, minifiedAsset);
+			});
 		} else {
 			callback(null, asset);
 		}

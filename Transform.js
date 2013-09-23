@@ -1,6 +1,7 @@
 
 var Transform = require('stream').Transform;
 var util = require('util');
+var ferro = require('ferro');
 
 util.inherits(AssetTransform, Transform);
 function AssetTransform(options) {
@@ -22,10 +23,8 @@ AssetTransform.prototype._transform = function(asset, encoding, next) {
 	if (self.transform) {
 		self.transform(asset || null, function(error, transformedAsset) {
 			if (error) {
-				console.error('Transform:', error.stack || error);
-				self.emit('error', error);
-			}
-			if (transformedAsset) {
+				console.error(ferro.stack(error));
+			} else if (transformedAsset) {
 				self.push(transformedAsset);
 			}
 		});

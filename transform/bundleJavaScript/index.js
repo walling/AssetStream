@@ -4,6 +4,7 @@ var isType = require('../../helper/isType');
 var UglifyJS = require('uglify-js');
 var fs = require('fs');
 var path = require('path');
+var ferro = require('ferro');
 var SourceMapConsumer = require('source-map').SourceMapConsumer;
 var SourceMapGenerator = require('source-map').SourceMapGenerator;
 
@@ -122,7 +123,7 @@ module.exports = Transform.create(function(options) {
 	}
 
 	function bundleError(message) {
-		var error = new Error(message);
+		var error = ferro('BundleJavaScriptError', message);
 		if (bundleHasBeenBuilt) {
 			bundleCallback(error);
 		} else {
@@ -272,7 +273,10 @@ module.exports = Transform.create(function(options) {
 			delete modules[asset.path];
 		} else if (asset.event === 'update' && isType.javaScript(asset)) {
 			if (!asset.content.minified) {
-				callback(new Error('Can only bundle minified JavaScript modules.'));
+				callback(ferro(
+					'BundleJavaScriptError',
+					'Can only bundle minified JavaScript modules.'
+				));
 				return;
 			}
 

@@ -26,7 +26,7 @@ function AssetSource(options) {
 
 			source(function(error, asset) {
 				if (error) {
-					self.emit('error', error);
+					console.error(ferro.stack(error));
 				} else if (self._assets) {
 					var lastIndex = self._assets.length - 1;
 					if (lastIndex < 0 || self._assets[lastIndex]) {

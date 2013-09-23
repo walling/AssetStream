@@ -122,14 +122,22 @@ module.exports = function(asset, callback) {
 
 		callback(null, asset);
 	} catch (error) {
-		if (error instanceof UglifyJS.JS_Parse_Error) {
-			console.error('ERR: Parse error at ' + asset.path + ':' + error.line + ',' + error.col + ': ' + error.message + '\n' + error.stack);
-		} else {
-			console.error('ERR: Parse error at ' + asset.path + ':', error.stack || error);
+		var message = 'Failed to minify ' + asset.path;
+		if (error.line) {
+			message += ':' + error.line;
+			if (error.col) {
+				message += ':' + error.col;
+			}
+		}
+		if (error.message) {
+			message += ': ' + error.message;
 		}
 
-		var reportedError = new Error('Could not minify JS.');
-		reportedError.cause = error;
-		callback(reportedError, asset);
+		callback({
+			message: message,
+			path: asset.path,
+			line: error.line,
+			column: error.col
+		}, asset);
 	}
 };
