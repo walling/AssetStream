@@ -1,6 +1,6 @@
 {
 	"name": "assetstream",
-	"version": "0.1.14",
+	"version": "0.1.15",
 	"description": "Stream and transform your browser assets.",
 	"repository": {
 		"type": "git",
@@ -8,16 +8,16 @@
 	},
 	"main": "./AssetStream",
 	"dependencies": {
-		"miniwatch": "0.1.x",
-		"mime": "*",
-		"worker-farm": "0.2.x",
-		"uglify-js": "2.x",
-		"source-map": "0.1.x",
-		"handlebars": "1.x",
 		"common": "0.2.x",
-		"mkdirp": "0.3.x",
-		"less": "1.4.x",
 		"ferro": "0.2.x",
-		"source-map": "0.1.x"
-	}
+		"handlebars": "1.x",
+		"less": "1.4.2",
+		"mime": "*",
+		"miniwatch": "0.1.x",
+		"mkdirp": "0.3.x",
+		"source-map": "0.1.x",
+		"uglify-js": "2.x",
+		"worker-farm": "0.2.x"
+	},
+	"license": "MIT"
 }
