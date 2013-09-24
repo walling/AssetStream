@@ -7,7 +7,7 @@ var transformCache = require('../../helper/transformCache');
 var isType = require('../../helper/isType');
 var ferro = require('ferro');
 
-function minifyJavaScriptAsset(cache, asset, callback) {
+function minifyJavaScriptAsset(cache, asset, options, callback) {
 	if ('minified' in asset.content) {
 		return callback(null, asset);
 	}
@@ -17,7 +17,7 @@ function minifyJavaScriptAsset(cache, asset, callback) {
 			return callback(null, cachedAsset);
 		}
 
-		workers(asset, function(error, transformedAsset) {
+		workers(asset, options, function(error, transformedAsset) {
 			if (error) return callback(error);
 
 			cache.put(asset, transformedAsset, function(error) {
@@ -34,7 +34,7 @@ module.exports = Transform.create(function(options) {
 
 	return function(asset, callback) {
 		if (asset.event === 'update' && isType.javaScript(asset)) {
-			minifyJavaScriptAsset(cache, asset, function(error, minifiedAsset) {
+			minifyJavaScriptAsset(cache, asset, options, function(error, minifiedAsset) {
 				if (error) {
 					return callback(ferro('MinifyJavaScriptError', error));
 				}

@@ -20,4 +20,4 @@
 
 	loadModule(entry);
 
-}(this, [/* modules */], {/* mappings */}, /* entry */0));
+}(this,[],{},0));

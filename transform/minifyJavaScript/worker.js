@@ -37,7 +37,7 @@ var wrapCommonJS = new UglifyJS.TreeTransformer(null, function(node) {
 	}
 });
 
-module.exports = function(asset, callback) {
+module.exports = function(asset, options, callback) {
 	try {
 		var startTime = new Date();
 		var firstToken = null;
@@ -94,50 +94,76 @@ module.exports = function(asset, callback) {
 			}
 		});
 		initialAST.walk(findRequires);
+		dependencies = Object.keys(dependencies).sort();
 
-		var wrappedAST = initialAST.transform(wrapCommonJS);
-		wrappedAST.figure_out_scope();
+		var noMinify = !!(options && options.noMinify);
+		if (noMinify) {
+			asset.content.minified =
+				'function(require,exports,module,global){' + asset.content.data + '}';
+			asset.content.sourceMap = null;
+			asset.content.dependencies = dependencies;
+		} else {
+			var wrappedAST = initialAST.transform(wrapCommonJS);
+			wrappedAST.figure_out_scope();
 
-		var compressor = UglifyJS.Compressor();
-		var compressedAST = wrappedAST.transform(compressor);
-		compressedAST.figure_out_scope();
-		compressedAST.mangle_names();
+			var compressor = UglifyJS.Compressor();
+			var compressedAST = wrappedAST.transform(compressor);
+			compressedAST.figure_out_scope();
+			compressedAST.mangle_names();
 
-		var sourceMap = UglifyJS.SourceMap();
-		var code = UglifyJS.OutputStream({
-			source_map: sourceMap
-		});
-		compressedAST.print(code);
+			var sourceMap = UglifyJS.SourceMap();
+			var code = UglifyJS.OutputStream({
+				source_map: sourceMap
+			});
+			compressedAST.print(code);
 
-		asset.content.minified = code.toString();
-		asset.content.sourceMap = JSON.parse(sourceMap.toString());
-		asset.content.dependencies = Object.keys(dependencies).sort();
+			asset.content.minified = code.toString();
+			asset.content.sourceMap = JSON.parse(sourceMap.toString());
+			asset.content.dependencies = dependencies;
+		}
 
 		var endTime = new Date();
 		asset.transforms = (asset.transforms || []).concat([{
 			name: 'javaScriptMinify',
 			time: endTime - startTime,
-			warnings: warnings.length > 0 ? warnings : undefined
+			warnings: warnings.length > 0 ? warnings : undefined,
+			noMinify: !!noMinify
 		}]);
 
 		callback(null, asset);
 	} catch (error) {
 		var message = 'Failed to minify ' + asset.path;
-		if (error.line) {
-			message += ':' + error.line;
-			if (error.col) {
-				message += ':' + error.col;
+		var err;
+
+		if (error instanceof UglifyJS.JS_Parse_Error) {
+			if (error.line) {
+				message += ':' + error.line;
+				if (error.col) {
+					message += ':' + error.col;
+				}
 			}
-		}
-		if (error.message) {
-			message += ': ' + error.message;
+			if (error.message) {
+				message += ': ' + error.message;
+			}
+
+			err = {
+				message: message,
+				path: asset.path,
+				line: error.line,
+				column: error.col
+			};
+		} else {
+			err = {
+				message: message,
+				path: asset.path,
+				cause: {
+					name: error.name,
+					message: error.message,
+					stack: error.stack
+				}
+			};
 		}
 
-		callback({
-			message: message,
-			path: asset.path,
-			line: error.line,
-			column: error.col
-		}, asset);
+		callback(err, asset);
 	}
 };

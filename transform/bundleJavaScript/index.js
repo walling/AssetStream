@@ -20,32 +20,48 @@ var _loader = (function() {
 	return loader;
 }());
 
-function createLoader(loaderPath) {
+function createLoader(loaderPath, options) {
 	loaderPath = loaderPath || '/loader.js';
 
-	var map = JSON.parse(_loader.map);
-	map.file = loaderPath;
-	map.sources = [loaderPath];
+	if (options && options.noMinify) {
+		return {
+			event: 'update',
+			path: loaderPath,
+			content: {
+				type: 'application/javascript',
+				data: _loader.src,
+				minified: _loader.src,
+				sourceMap: null,
+				dependencies: []
+			}
+		};
+	} else {
+		var map = JSON.parse(_loader.map);
+		map.file = loaderPath;
+		map.sources = [loaderPath];
 
-	return {
-		event: 'update',
-		path: loaderPath,
-		content: {
-			type: 'application/javascript',
-			data: _loader.src,
-			minified: _loader.code,
-			sourceMap: map,
-			dependencies: []
-		}
-	};
+		return {
+			event: 'update',
+			path: loaderPath,
+			content: {
+				type: 'application/javascript',
+				data: _loader.src,
+				minified: _loader.code,
+				sourceMap: map,
+				dependencies: []
+			}
+		};
+	}
 }
 
 function loadJavaScriptAsset(asset) {
 	var mappings = [];
-	var map = new SourceMapConsumer(asset.content.sourceMap);
-	map.eachMapping(function(mapping) {
-		mappings.push(mapping);
-	});
+	if (asset.content.sourceMap) {
+		var map = new SourceMapConsumer(asset.content.sourceMap);
+		map.eachMapping(function(mapping) {
+			mappings.push(mapping);
+		});
+	}
 
 	return {
 		mappings: mappings,
@@ -78,7 +94,7 @@ function addModuleSourceMap(generator, module) {
 	}
 
 	generator.lineOffset += module.numberOfLines;
-	return generator;
+	return (mappings.length > 0);
 }
 
 module.exports = Transform.create(function(options) {
@@ -191,11 +207,11 @@ module.exports = Transform.create(function(options) {
 			file: outputPath
 		});
 		bundleSourceMap.lineOffset = 0;
-		addModuleSourceMap(bundleSourceMap, loader);
+		var hasSourceMap = addModuleSourceMap(bundleSourceMap, loader);
 
 		var loaderMappings = {};
 		var loaderModules = usedModules.map(function(module) {
-			addModuleSourceMap(bundleSourceMap, module);
+			hasSourceMap = hasSourceMap && addModuleSourceMap(bundleSourceMap, module);
 
 			for (var requirePath in module.dependencies) {
 				var requireModule = module.dependencies[requirePath];
@@ -219,7 +235,10 @@ module.exports = Transform.create(function(options) {
 
 		var bundle = loader.asset.content.minified.replace(/\[\],\{\},0/, function() {
 			return '[\n' + loaderModules + '\n],' + loaderMappings + ',0';
-		}) + '\n//@ sourceMappingURL=' + path.relative(path.dirname(outputPath), outputMapPath);
+		}) +
+		(hasSourceMap ?
+			'\n//@ sourceMappingURL=' + path.relative(path.dirname(outputPath), outputMapPath) :
+			'');
 
 		var endTime = new Date();
 		var bundleTime = endTime - startTime;
@@ -286,7 +305,7 @@ module.exports = Transform.create(function(options) {
 
 		if (shouldBundle) {
 			if (!loader) {
-				loader = loadJavaScriptAsset(createLoader(loaderPath));
+				loader = loadJavaScriptAsset(createLoader(loaderPath, options));
 				callback(null, loader.asset);
 			}
 
