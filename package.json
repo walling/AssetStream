@@ -1,6 +1,6 @@
 {
 	"name": "assetstream",
-	"version": "0.1.16",
+	"version": "0.1.17",
 	"description": "Stream and transform your browser assets.",
 	"repository": {
 		"type": "git",
@@ -9,7 +9,7 @@
 	"main": "./AssetStream",
 	"dependencies": {
 		"common": "0.2.x",
-		"ferro": "0.2.x",
+		"ferro": "0.3.x",
 		"handlebars": "1.x",
 		"less": "1.4.2",
 		"mime": "*",
