@@ -1,5 +1,6 @@
 
 var Readable = require('stream').Readable;
+var ferro = require('ferro');
 var util = require('util');
 
 util.inherits(AssetSource, Readable);
